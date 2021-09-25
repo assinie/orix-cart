@@ -2,7 +2,7 @@
 # Spécifique au Projet
 #
 
-PROJECT ?= rom_cmd.rom
+PROJECT ?= rom_cmd
 BUILD_PATH = ../build
 OBJ_PATH = $(BUILD_PATH)/obj
 BIN_PATH = $(BUILD_PATH)/bin
@@ -59,7 +59,7 @@ endif
 
 .PHONY: clean mrproper
 
-all: $(BUILD_PATH) $(OBJ_PATH) $(BIN_PATH) $(BIN_PATH)/$(PROJECT)
+all: $(BUILD_PATH) $(OBJ_PATH) $(BIN_PATH) $(BIN_PATH)/$(PROJECT).rom
 
 configure: $(OBJ_PATH) $(BIN_PATH)
 
@@ -68,7 +68,7 @@ clean:
 
 
 mrproper: clean
-	@#cd $(BIN_PATH) && rm -f $(PROJECT) *.sym *.map
+	@#cd $(BIN_PATH) && rm -f $(PROJECT).rom *.sym *.map
 	rm -rf $(BIN_PATH)
 	rm -rf $(OBJ_PATH)
 
@@ -88,8 +88,8 @@ $(OBJ_PATH)/%.o: %.s
 	@$(AS) $(ASFLAGS) -o $@ $<
 
 
-$(BIN_PATH)/$(PROJECT): $(OBJS) $(LIB_PATH)/$(LIBS)
-	@echo "Create $(PROJECT)"
+$(BIN_PATH)/$(PROJECT).rom: $(OBJS) $(LIB_PATH)/$(LIBS)
+	@echo "Create $(PROJECT).rom"
 	@$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
 ifeq ($(DEBUG),yes)
 	@echo "Create $(PROJECT).sym"
