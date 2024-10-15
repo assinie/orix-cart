@@ -1,9 +1,9 @@
-# ROM: rom_cmd
+# ROM: myrom
 
 ### ROM bank example
 
 ## DESCRIPTION
-**rom_cmd.rom** add 3 commands to Orix shell.
+**myrom.rom** add 3 commands to Orix shell.
 
 ## COMMANDS
 *  hello
@@ -11,7 +11,7 @@
 *  bonjour
                 display "Bonjour le monde!"
 *  bankid
-                display the bank id of rom_cmd
+                display the bank id of myrom
 
 ## SOURCE
 https://github.com/assinie/orix-cart

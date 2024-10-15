@@ -12,28 +12,16 @@
 ;                       cc65 includes
 ;----------------------------------------------------------------------
 .include "telestrat.inc"
-;.include "fcntl.inc"
-
-;----------------------------------------------------------------------
-;                       Orix Kernel includes
-;----------------------------------------------------------------------
-.include "kernel/src/include/kernel.inc"
-;.include "kernel/src/include/ch376.inc"
-
-
-;----------------------------------------------------------------------
-;                       Orix Shell includes
-;----------------------------------------------------------------------
-
 
 ;----------------------------------------------------------------------
 ;                       Orix SDK includes
 ;----------------------------------------------------------------------
-.include "macros/SDK.mac"
-.include "include/SDK.inc"
-;.include "macros/types.mac"
-;.include "include/errors.inc"
-.include "../macros/rom_cmd.mac"
+.include "SDK.mac"
+
+;----------------------------------------------------------------------
+;                       Application includes
+;----------------------------------------------------------------------
+.include "macros/rom_cmd.mac"
 
 ;----------------------------------------------------------------------
 ;                               Imports
@@ -45,18 +33,33 @@
 ;----------------------------------------------------------------------
 
 ;----------------------------------------------------------------------
-; Defines / Constants
+;                       Defines / Constants
 ;----------------------------------------------------------------------
-        twil_register := $0342
-        twil_bank     := $0343
-
-        V2DRA := $321
-
+twil_register := $0342
+twil_bank     := $0343
 
 ;----------------------------------------------------------------------
-;                               Page Zéro
+;                               Zéro Page
 ;----------------------------------------------------------------------
 
+
+;----------------------------------------------------------------------
+;		                Strings
+;----------------------------------------------------------------------
+.pushseg
+	.segment "RODATA"
+                startup_message:
+                        .asciiz "Starting rom..."
+
+                hello_world:
+                        .asciiz "Hello world!\r\n"
+
+                bonjour_monde:
+                        .asciiz "Bonjour le monde!\r\n"
+
+                bank_id:
+                        .asciiz "Bank $"
+.popseg
 
 ;----------------------------------------------------------------------
 ; Définition de la rom
@@ -89,26 +92,48 @@
 ;                            Code de la rom
 ;----------------------------------------------------------------------
 rom_start
-        print startup_message, NOSAVE
+        print startup_message
         rts
 
+;----------------------------------------------------------------------
+;
+; Entrée:
+;       AY: Adresse de la ligne de commande (A=LSB)
+;       X : -
+;
+;----------------------------------------------------------------------
 hello
-        print hello_world, NOSAVE
+        print hello_world
         rts
 
+;----------------------------------------------------------------------
+;
+; Entrée:
+;       AY: Adresse de la ligne de commande (A=LSB)
+;       X : -
+;
+;----------------------------------------------------------------------
 bonjour
-        print bonjour_monde, NOSAVE
+        print bonjour_monde
         rts
 
+;----------------------------------------------------------------------
+;
+; Entrée:
+;       AY: Adresse de la ligne de commande (A=LSB)
+;       X : -
+;
+;----------------------------------------------------------------------
 bankid
-        print bank_id, NOSAVE
+        print bank_id
+
         lda twil_bank
         asl
         asl
         tsx
         pha
 
-        lda V2DRA
+        lda VIA2::PRA
         and #$07
         clc
         adc $100,x
@@ -119,22 +144,8 @@ bankid
         adc $100,x
 
         jsr PrintHexByte
-        BRK_KERNEL XCRLF
+        crlf
 
         pla
         rts
 
-;----------------------------------------------------------------------
-;                       Chaines de caractères
-;----------------------------------------------------------------------
-startup_message:
-        .asciiz "Starting romm..."
-
-hello_world:
-        .asciiz "Hello world!\r\n"
-
-bonjour_monde:
-        .asciiz "Bonjour le monde!\r\n"
-
-bank_id:
-        .asciiz "Bank $"
