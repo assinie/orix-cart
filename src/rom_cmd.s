@@ -26,7 +26,6 @@
 ;----------------------------------------------------------------------
 ;                               Imports
 ;----------------------------------------------------------------------
-.import PrintHexByte
 
 ;----------------------------------------------------------------------
 ;                               Exports
@@ -91,9 +90,10 @@ twil_bank     := $0343
 ;----------------------------------------------------------------------
 ;                            Code de la rom
 ;----------------------------------------------------------------------
-rom_start
-        print startup_message
-        rts
+.proc rom_start
+                print startup_message
+                rts
+.endproc
 
 ;----------------------------------------------------------------------
 ;
@@ -102,9 +102,10 @@ rom_start
 ;       X : -
 ;
 ;----------------------------------------------------------------------
-hello
-        print hello_world
-        rts
+.proc hello
+                print hello_world
+                rts
+.endproc
 
 ;----------------------------------------------------------------------
 ;
@@ -113,9 +114,10 @@ hello
 ;       X : -
 ;
 ;----------------------------------------------------------------------
-bonjour
-        print bonjour_monde
-        rts
+.proc bonjour
+                print bonjour_monde
+                rts
+.endproc
 
 ;----------------------------------------------------------------------
 ;
@@ -124,28 +126,68 @@ bonjour
 ;       X : -
 ;
 ;----------------------------------------------------------------------
-bankid
-        print bank_id
+.proc bankid
+                print bank_id
 
-        lda twil_bank
-        asl
-        asl
-        tsx
-        pha
+                lda twil_bank
+                asl
+                asl
+                tsx
+                pha
 
-        lda VIA2::PRA
-        and #$07
-        clc
-        adc $100,x
-        sta $100,x
+                lda VIA2::PRA
+                and #$07
+                clc
+                adc $100,x
+                sta $100,x
 
-        lda twil_register
-        and #$20
-        adc $100,x
+                lda twil_register
+                and #$20
+                adc $100,x
 
-        jsr PrintHexByte
-        crlf
+                jsr PrintHexByte
+                crlf
 
-        pla
-        rts
+                pla
+                rts
+.endproc
 
+;----------------------------------------------------------------------
+; Affiche la valeur de A en hexa
+;
+; Entrée:
+;       A: valeur binaire
+;
+; Sortie:
+;       A: modifié
+;       X: inchangé
+;       Y: inchangé
+;----------------------------------------------------------------------
+.proc PrintHexByte
+                cmp #10
+                bcc nibout
+
+        hexout1:
+                pha
+
+                ; High nibble
+                lsr
+                lsr
+                lsr
+                lsr
+                jsr nibout
+
+                ; Low nibble
+                pla
+                and #$0f
+
+        nibout:
+                ora #$30
+                cmp #$3a
+                bcc nibo1
+                adc #$06
+
+        nibo1:
+                cputc
+                rts
+.endproc
